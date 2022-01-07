@@ -1,33 +1,9 @@
 /*
- ============================================================================
- Name        : clevo-indicator.c
- Author      : AqD <iiiaqd@gmail.com>
- Version     :
- Description : Ubuntu fan control indicator for Clevo laptops
-
- Based on http://www.association-apml.fr/upload/fanctrl.c by Jonas Diemer
- (diemer@gmx.de)
-
- ============================================================================
-
- TEST:
- gcc clevo-indicator.c -o clevo-indicator `pkg-config --cflags --libs appindicator3-0.1` -lm
- sudo chown root clevo-indicator
- sudo chmod u+s clevo-indicator
-
- Run as effective uid = root, but uid = desktop user (in order to use indicator).
-
- ============================================================================
- Auto fan control algorithm:
-
- The algorithm is to replace the builtin auto fan-control algorithm in Clevo
- laptops which is apparently broken in recent models such as W350SSQ, where the
- fan doesn't get kicked until both of GPU and CPU are really hot (and GPU
- cannot be hot anymore thanks to nVIDIA's Maxwell chips). It's far more
- aggressive than the builtin algorithm in order to keep the temperatures below
- 60°C all the time, for maximized performance with Intel turbo boost enabled.
-
- ============================================================================
+ ================================================================================
+ 
+Based on https://github.com/SkyLandTW/clevo-indicator which is also based on
+ http://www.association-apml.fr/upload/fanctrl.c by Jonas Diemer (diemer@gmx.de)
+ ================================================================================
  */
 
 #include <dirent.h>
@@ -49,7 +25,7 @@
 
 #include <libappindicator/app-indicator.h>
 
-#define NAME "clevo-indicator"
+#define NAME "cyrex-indicator"
 
 #define EC_SC 0x66
 #define EC_DATA 0x62
@@ -57,12 +33,6 @@
 #define IBF 1
 #define OBF 0
 #define EC_SC_READ_CMD 0x80
-
-/* EC registers can be read by EC_SC_READ_CMD or /sys/kernel/debug/ec/ec0/io:
- *
- * 1. modprobe ec_sys
- * 2. od -Ax -t x1 /sys/kernel/debug/ec/ec0/io
- */
 
 #define EC_REG_SIZE 0x100
 #define EC_REG_CPU_TEMP 0x07
@@ -145,7 +115,7 @@ struct {
 static pid_t parent_pid = 0;
 
 int main(int argc, char* argv[]) {
-    printf("Simple fan control utility for Clevo laptops\n");
+    printf("");
     if (check_proc_instances(NAME) > 1) {
         printf("Multiple running instances!\n");
         char* display = getenv("DISPLAY");
@@ -193,42 +163,15 @@ int main(int argc, char* argv[]) {
         if (argv[1][0] == '-') {
             printf(
                     "\n\
-Usage: clevo-indicator [fan-duty-percentage]\n\
+Usage: cyrex-indicator [50- 100]\n\
 \n\
-Dump/Control fan duty on Clevo laptops. Display indicator by default.\n\
-\n\
-Arguments:\n\
-  [fan-duty-percentage]\t\tTarget fan duty in percentage, from 40 to 100\n\
-  -?\t\t\t\tDisplay this help and exit\n\
-\n\
-Without arguments this program should attempt to display an indicator in\n\
-the Ubuntu tray area for fan information display and control. The indicator\n\
-requires this program to have setuid=root flag but run from the desktop user\n\
-, because a root user is not allowed to display a desktop indicator while a\n\
-non-root user is not allowed to control Clevo EC (Embedded Controller that's\n\
-responsible of the fan). Fix permissions of this executable if it fails to\n\
-run:\n\
-    sudo chown root clevo-indicator\n\
-    sudo chmod u+s  clevo-indicator\n\
-\n\
-Note any fan duty change should take 1-2 seconds to come into effect - you\n\
-can verify by the fan speed displayed on indicator icon and also louder fan\n\
-noise.\n\
-\n\
-In the indicator mode, this program would always attempt to load kernel\n\
-module 'ec_sys', in order to query EC information from\n\
-'/sys/kernel/debug/ec/ec0/io' instead of polling EC ports for readings,\n\
-which may be more risky if interrupted or concurrently operated during the\n\
-process.\n\
-\n\
-DO NOT MANIPULATE OR QUERY EC I/O PORTS WHILE THIS PROGRAM IS RUNNING.\n\
-\n");
+");
             return main_dump_fan();
         } else {
             int val = atoi(argv[1]);
             if (val < 40 || val > 100)
                     {
-                printf("invalid fan duty %d!\n", val);
+                printf("invalid value %d!\n", val);
                 return EXIT_FAILURE;
             }
             return main_test_fan(val);

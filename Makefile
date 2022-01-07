@@ -11,7 +11,7 @@ SRCDIR := src
 SRC = clevo-indicator.c
 OBJ = $(patsubst %.c,$(OBJDIR)/%.o,$(SRC)) 
 
-TARGET = bin/clevo-indicator
+TARGET = bin/cyrex-indicator
 
 CFLAGS += `pkg-config --cflags appindicator3-0.1`
 LDFLAGS += `pkg-config --libs appindicator3-0.1`
