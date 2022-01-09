@@ -8,10 +8,10 @@ DSTDIR := /usr/local
 OBJDIR := obj
 SRCDIR := src
 
-SRC = clevo-indicator.c
+SRC = cyrex-fanconrol.c
 OBJ = $(patsubst %.c,$(OBJDIR)/%.o,$(SRC)) 
 
-TARGET = bin/cyrex-indicator
+TARGET = bin/cyrex-fancontrol
 
 CFLAGS += `pkg-config --cflags appindicator3-0.1`
 LDFLAGS += `pkg-config --libs appindicator3-0.1`
