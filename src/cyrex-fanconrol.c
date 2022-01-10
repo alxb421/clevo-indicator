@@ -224,7 +224,7 @@ static void main_on_sigterm(int signum) {
 }
 
 static int show_temp(void) {
-   printf("%d°C\n", ec_query_cpu_temp());
+   printf("%d", ec_query_cpu_temp());
    return EXIT_SUCCESS;
 }
 
