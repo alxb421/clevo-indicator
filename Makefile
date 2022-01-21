@@ -4,28 +4,21 @@ CC = gcc
 CFLAGS = -c -Wall -std=gnu99
 LDFLAGS =
 
-DSTDIR := /usr/local
 OBJDIR := obj
 SRCDIR := src
+TGDIR := bin
 
 SRC = cyrex-fanconrol.c
-OBJ = $(patsubst %.c,$(OBJDIR)/%.o,$(SRC)) 
+OBJ = $(patsubst %.c,$(OBJDIR)/%.o,$(SRC))
 
 TARGET = bin/cyrex-fancontrol
 
 CFLAGS += `pkg-config --cflags appindicator3-0.1`
 LDFLAGS += `pkg-config --libs appindicator3-0.1`
 
-all: $(TARGET)
-
 install: $(TARGET)
 	@echo Install to ${DSTDIR}/bin/
-	@sudo install -m 4750 -g adm $(TARGET) ${DSTDIR}/bin/
-
-test: $(TARGET)
-	@sudo chown root $(TARGET)
-	@sudo chgrp adm  $(TARGET)
-	@sudo chmod 4750 $(TARGET)
+	@rm -rf $(OBJDIR)
 
 $(TARGET): $(OBJ) Makefile
 	@mkdir -p bin
@@ -33,14 +26,9 @@ $(TARGET): $(OBJ) Makefile
 	@$(CC) $(OBJ) -o $(TARGET) $(LDFLAGS) -lm
 
 clean:
-	rm $(OBJ) $(TARGET)
+	@rm -rf $(OBJDIR) $(TGDIR)
 
 $(OBJDIR)/%.o : $(SRCDIR)/%.c Makefile
 	@echo compiling $< 
 	@mkdir -p obj
 	@$(CC) $(CFLAGS) -c $< -o $@
-
-#$(OBJECTS): | obj
-
-#obj:
-#	@mkdir -p $@
