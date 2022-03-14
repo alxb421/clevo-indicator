@@ -82,7 +82,8 @@ int main(int argc, char* argv[]) {
     if (argc <= 1) {
         char* display = getenv("DISPLAY");
         if (display == NULL || strlen(display) == 0) {
-            return main_dump_fan();
+            //return main_dump_fan();
+		return 0;
         } else {
             parent_pid = getpid();
             main_init_share();
@@ -286,17 +287,17 @@ static int ec_auto_duty_adjust(void) {
         return 40;
     if (temp >= 30 && duty < 30)
         return 30;
-    if (temp >= 20 && duty < 20)
+    if (temp >= 20 && duty < 16)
         return 20;
-    if (temp >= 10 && duty < 10)
-        return 10;
+    if (temp >= 10 && duty < 16)
+        return 16;
     //
-    if (temp <= 15 && duty > 10)
-        return 10;
-    if (temp <= 25 && duty > 20)
+    if (temp <= 15 && duty > 16)
+        return 16;
+    if (temp <= 25 && duty > 16)
+        return 16;
+    if (temp <= 35 && duty > 20)
         return 20;
-    if (temp <= 35 && duty > 30)
-        return 30;
     if (temp <= 45 && duty > 40)
         return 40;
     if (temp <= 55 && duty > 50)
@@ -414,4 +415,5 @@ static void signal_term(__sighandler_t handler) {
     signal(SIGUSR1, handler);
     signal(SIGUSR2, handler);
 }
+
 
